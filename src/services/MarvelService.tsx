@@ -1,5 +1,14 @@
-import {InitType} from "../component/randomChar/randomChar";
-
+// import {InitType} from "../component/randomChar/randomChar";
+export type ResType = {
+    name: string,
+    description: string,
+    thumbnail: {
+        path: string,
+        extension: string
+    },
+    homepage: string,
+    resourceURI: string,
+}
 const url = 'https://gateway.marvel.com:443/v1/public/characters'
 
 class MarvelService {
@@ -25,31 +34,25 @@ class MarvelService {
         const res = await this.getResource(`${url}/${id}?${this._apiKeyThirty}`)
         return this._transformCharacter(res.data.results[0])
     }
-    // console.log("13:45 PM".split(' ')[0]); // Разделить по пробелу, взять первую часть
-    // console.log("13:45 PM".match(/\d?\d:\d\d/)[0]); // совпадение по регулярному выражению
-    // console.log("13:45 PM".substr(0, 5)); // 5 символов, начиная с 0го
-    // console.log("13:45 PM".substring(0, 5)); // копировать по индексам [0:5)
-    // console.log("13:45 PM".replace(/\s.*/, '')); // заменить пробел и всё, что дальше пустой строкой
-    // console.log("13:45 PM".slice(0, -3));
 
-    _transformCharacter = (res: InitType) => {
+    _transformCharacter = (res: ResType) => {
+        // console.log(res)
         if(!res.description.length) {
             res.description = 'Старик Ли умер и не успел придумать описание'
         }
         if(res.description.length > 200) {
-            console.log(res.description.length + '...')
             res.description = res.description.slice(200, res.description.length) + ' ...'
 
         }
         return {
-            name: res.name,
-            description: res.description,
-            thumbnail: {
-                path: res.thumbnail.path,
-                extension: res.thumbnail.extension,
-            },
-            homepage: res.resourceURI,
-            resourceURI: res.resourceURI,
+                name: res.name,
+                description: res.description,
+                thumbnail: {
+                    path: res.thumbnail.path,
+                    extension: res.thumbnail.extension,
+                },
+                homepage: res.resourceURI,
+                resourceURI: res.resourceURI
         }
     }
 }

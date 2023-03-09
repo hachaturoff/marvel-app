@@ -2,69 +2,92 @@ import '../../style/style.scss';
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 import {useEffect, useState} from "react";
-import MarvelService from "../../services/MarvelService";
+import MarvelService, {ResType} from "../../services/MarvelService";
+import Spinner from "../spinner/Spinner";
+import {Simulate} from "react-dom/test-utils";
+import ErrorMesasge from '../errorMessage/ErrorMesasge';
+
 
 export type InitType = {
-    name: string,
-    description: string,
-    thumbnail: {
-        path: string,
-        extension: string
+    char: {
+        name: string,
+        description: string,
+        thumbnail: {
+            path: string,
+            extension: string
+        },
+        homepage: string,
+        resourceURI: string,
     },
-    homepage: string,
-    resourceURI: string,
+    loading: boolean,
+    error: boolean
 }
 
 const RandomChar = () => {
 
     const init: InitType = {
-        name: '',
-        description: '',
-        thumbnail: {
-            path: '',
-            extension: '',
-        },
-        homepage: '',
-        resourceURI: '',
+       char: {
+           name: '',
+           description: '',
+           thumbnail: {
+               path: '',
+               extension: '',
+           },
+           homepage: '',
+           resourceURI: '',
+       },
+        loading: true,
+        error: false
     }
+
 
     let [character , setCharacter] = useState(init)
 
-    const onCharLoaded = (res: InitType) => {
-        setCharacter(res)
+    const onCharLoaded = (char: ResType) => {
+        setCharacter({char , loading: false, error: false})
+    }
 
+    const onError = (char: ResType ) => {
+        setCharacter({char , loading: false, error: true})
     }
 
     const onRandomCharacter = () => {
+
         const newMarvelService = new MarvelService()
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
 
         newMarvelService.getCharacter(id)
-            .then(onCharLoaded)}
+            .then(onCharLoaded)
+            .catch(onError)
+    }
 
-    // useEffect(() => {
-    //     onRandomCharacter()
-    // })
+    const errorMessage = character.error ? <ErrorMesasge/> : null
+    const spinner = character.loading ? <Spinner/> : null
+    const content = !character.error && !character.loading
+        ? <div className="randomchar__block">
+            <img src={character.char.thumbnail.path + '.' + character.char.thumbnail.extension} alt="Random character" className="randomchar__img"/>
+            <div className="randomchar__info">
+                <p className="randomchar__name">{character.char.name}</p>
+                <p className="randomchar__descr">
+                    {character.char.description}
+                </p>
+                <div className="randomchar__btns">
+                    <a href={character.char.homepage} className="button button__main">
+                        <div className="inner">HomePage</div>
+                    </a>
+                    <a href={character.char.resourceURI} className="button button__secondary">
+                        <div className="inner">Wiki</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        : null;
 
     return (
         <div className="randomchar">
-            <div className="randomchar__block">
-                <img src={character.thumbnail.path + '.' + character.thumbnail.extension} alt="Random character" className="randomchar__img"/>
-                <div className="randomchar__info">
-                    <p className="randomchar__name">{character.name}</p>
-                    <p className="randomchar__descr">
-                        {character.description}
-                    </p>
-                    <div className="randomchar__btns">
-                        <a href={character.homepage} className="button button__main">
-                            <div className="inner">HomePage</div>
-                        </a>
-                        <a href={character.resourceURI} className="button button__secondary">
-                            <div className="inner">Wiki</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            {errorMessage}
+            {spinner}
+            {content}
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br/>
@@ -83,5 +106,6 @@ const RandomChar = () => {
         </div>
     )
 }
+
 
 export default RandomChar;

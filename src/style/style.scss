@@ -68,7 +68,14 @@ main {
 .pulse {
     animation: pulse 1.5s ease-in-out .5s infinite
 }
-
+.spinner {
+    width: 200px;
+    margin: 0 auto;
+}
+.error-img {
+    width: 150px;
+    margin: 10% auto 0 auto;
+}
 @keyframes pulse {
     0% {
         opacity: 1
