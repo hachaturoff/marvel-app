@@ -50,16 +50,29 @@ const RandomChar = () => {
     const onError = (char: ResType ) => {
         setCharacter({char , loading: false, error: true})
     }
+    // console.log('ji')
 
+    const onLoad = () => {
+        setCharacter({
+            ...init,
+            loading: true,
+            error: false
+        })
+    }
     const onRandomCharacter = () => {
-
+        onLoad()
         const newMarvelService = new MarvelService()
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
 
         newMarvelService.getCharacter(id)
             .then(onCharLoaded)
             .catch(onError)
+
     }
+
+    useEffect(() => {
+        onRandomCharacter()
+    },[])
 
     const errorMessage = character.error ? <ErrorMesasge/> : null
     const spinner = character.loading ? <Spinner/> : null

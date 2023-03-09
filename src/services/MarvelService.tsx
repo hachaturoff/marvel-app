@@ -9,6 +9,16 @@ export type ResType = {
     homepage: string,
     resourceURI: string,
 }
+export type ResultsType = {
+    name: string,
+    description: string,
+    thumbnail: {
+        path: string,
+        extension: string
+    },
+    homepage: string,
+    resourceURI: string,
+}
 const url = 'https://gateway.marvel.com:443/v1/public/characters'
 
 class MarvelService {
@@ -18,6 +28,7 @@ class MarvelService {
     _apiKeyThirty = 'apikey=f22649fb023de87918d21da0ffafbdff'
 
     getResource = async (url: string) => {
+
         let res = await fetch(url)
         if(!res.ok) {
             throw new Error('Error in server')
@@ -26,8 +37,11 @@ class MarvelService {
     }
 
     getAllCharacters = async () => {
-        const res = await this.getResource(`${this._apiBase}?orderBy=-name&limit=5&offset=100&${this._apiKeyThirty}`)
-        return res.data.result.map(this._transformCharacter)
+
+        const res = await this.getResource(`${url}?limit=9&${this._apiKeyThirty}`)
+        // console.log(res.data.results)
+        // return this._transformCharacters(res.data.results)
+        return res.data.results
     }
 
     getCharacter = async (id: number) => {
@@ -55,6 +69,20 @@ class MarvelService {
                 resourceURI: res.resourceURI
         }
     }
+    // _transformCharacters = (res: Array<ResType>) => {
+    //     // console.log(res)
+    //     return [
+    //         {
+    //             name: res.name,
+    //             thumbnail: {
+    //                 path: res.thumbnail.path,
+    //                 extension: res.thumbnail.extension,
+    //             },
+    //             homepage: res.resourceURI,
+    //             resourceURI: res.resourceURI
+    //
+    //     ]
+    // }
 }
 
 export default MarvelService
