@@ -2,16 +2,20 @@ import '../../style/style.scss';
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 import {useEffect, useState} from "react";
-import MarvelService, {ResType} from "../../services/MarvelService";
+import MarvelService, {ItemsComicsType, ResType} from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
-import {Simulate} from "react-dom/test-utils";
 import ErrorMesasge from '../errorMessage/ErrorMesasge';
 
 
 export type InitType = {
     char: {
+        id: number,
         name: string,
         description: string,
+        comics: {
+            available: number,
+            items: Array<ItemsComicsType>
+        }
         thumbnail: {
             path: string,
             extension: string
@@ -26,16 +30,21 @@ export type InitType = {
 const RandomChar = () => {
 
     const init: InitType = {
-       char: {
-           name: '',
-           description: '',
-           thumbnail: {
-               path: '',
-               extension: '',
-           },
-           homepage: '',
-           resourceURI: '',
-       },
+        char: {
+            id: 0,
+            name: '',
+            description: '',
+            comics: {
+                available: 0,
+                items: [],
+            },
+            thumbnail: {
+                path: '',
+                extension: '',
+            },
+            homepage: '',
+            resourceURI: '',
+        },
         loading: true,
         error: false
     }
@@ -50,7 +59,6 @@ const RandomChar = () => {
     const onError = (char: ResType ) => {
         setCharacter({char , loading: false, error: true})
     }
-    // console.log('ji')
 
     const onLoad = () => {
         setCharacter({
@@ -69,7 +77,6 @@ const RandomChar = () => {
             .catch(onError)
 
     }
-
     useEffect(() => {
         onRandomCharacter()
     },[])

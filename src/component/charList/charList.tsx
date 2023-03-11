@@ -1,25 +1,30 @@
 import './charList.scss';
 import '../../style/style.scss';
-import abyss from '../../resources/img/abyss.jpg';
-import MarvelService from "../../services/MarvelService";
+import MarvelService, {ItemsComicsType} from "../../services/MarvelService";
 import {useEffect, useState} from "react";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
 
-type InitCharType = {
+type PropsType = {
+    getCharId: (id: number) => void,
+}
+
+export type MapInitCharType =  {
+    id: number,
     name: string,
     thumbnail: {
         path: string,
-        extension: string,
-    }
+        extension: string
+    },
 }
 
-let initChars: Array<InitCharType> = []
 
-const CharList = () => {
+let initChars: Array<MapInitCharType> = []
+
+const CharList = (props : PropsType) => {
     let [characters , setCharacters] = useState(initChars)
 
-    const onAllChar = (initChars: Array<any>) => {
+    const onAllChar = (initChars: Array<MapInitCharType>) => {
         setCharacters(initChars)
     }
 
@@ -29,18 +34,26 @@ const CharList = () => {
             .then(onAllChar)
             .catch(error)
     }
+    const onGetCharId = (id: number) => {
+        props.getCharId(id)
+    }
 
     useEffect(() => {
         getCharacters()
     },[])
-    console.log(characters)
 
-    let newCharacters = characters.map((char: InitCharType) => {
-        return <li className="char__item">
-                    <img src={char.thumbnail.path+ '.' + char.thumbnail.extension} alt="abyss"/>
-                    <div className="char__name">{char.name}</div>
-                </li>
+
+    let newCharacters = characters.map((char: MapInitCharType) => {
+            return <li
+                    onClick={()=> {onGetCharId(char.id)}}
+                    key={char.id}
+                    className="char__item">
+                        <img src={char.thumbnail.path+ '.' + char.thumbnail.extension} alt="abyss"/>
+                        <div className="char__name">{char.name}</div>
+                    </li>
     })
+
+    // const loading =
 
     return (
         <div className="char__list">
